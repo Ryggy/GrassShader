@@ -1,0 +1,12 @@
+README
+
+This project utilizes sprites sourced from Kenney's "Foliage Sprites" asset pack.
+
+Acknowledgment:
+
+Sprites for grass and foliage used in this project were obtained from Kenney. (n.d.). Foliage sprites. under a Creative Commons CC0 License.
+
+Available at: https://kenney.nl/assets/foliage-sprites
+
+These assets are available under a public domain license, allowing free use in any project. 
+Many thanks to Kenney for providing high-quality, freely available resources for the community!
