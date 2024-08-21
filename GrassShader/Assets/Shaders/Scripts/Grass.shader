@@ -7,17 +7,21 @@ Shader "Unlit/Grass"
         _Base("Base", Float) = 1.0
         _MinHeight("Minimum Height", Float) = 0
         _MaxHeight("Maximum Height", Float) = 1
+        _Density("Density", Float) = 0.5
+        _Offset("Billboard Offset", Vector) = (0, 0, 0, 0)
         _WindDistortionMap ("Wind Distortion Map", 2D) = "white" {}
         _WindFrequency("Wind Frequency", Vector) = (0.05,0.05,0,0)
         _WindStrength("Wind Strength", Float) = 1
 
-        _Tint("Tint", Color) = (0.5, 0.5, 0.5, 1)
-        _Darker("Darker Color", Color) = (0.5, 0.5, 0.5, 1)
+        _Tint("Light Tint", Color) = (0.5, 0.5, 0.5, 1)
+        _Darker("Dark Tint", Color) = (0.5, 0.5, 0.5, 1)
+        _GradientOffset("Gradient Offset", float) = 0
         _LightPower("Light Power", Float) = 0.05
         _TPower("Translucency Power", Float) = 0.02
         _ShadowPower("Shadow Power", Float) = 0.35
         _AlphaCutoff("Alpha Cutoff", Float) = 0.1
-
+        _VertexPaintColour("Vertex Paint Colour", Color) = (1, 1, 1, 1)
+        _VertexIgnoreColour("Vertex Ignore Colour", Color) = (1, 0, 0, 1)
     }
         SubShader
         {

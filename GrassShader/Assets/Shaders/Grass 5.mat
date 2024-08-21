@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Grass
+  m_Name: Grass 5
   m_Shader: {fileID: 4800000, guid: cda8fdf8c855b674296da070f9355aba, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BaseMap:
-        m_Texture: {fileID: 2800000, guid: 8323c8bcac09d81428658d9d49fa8aee, type: 3}
+        m_Texture: {fileID: 2800000, guid: 06dd7516970c74e4cb9b269ae3ef84f8, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _CurveTexture:
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _GradientControlTexture:
-        m_Texture: {fileID: 2800000, guid: 96758436457cee34d952a9b717ac3540, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4075f81c8b02dfb48ba8c76ce394d715, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _WindDistortionMap:
@@ -41,24 +41,24 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AlphaCutoff: 0.9
-    - _Base: 0.48
-    - _Density: 0.6
-    - _GradientOffset: 0
-    - _Height: 0.88
-    - _LightPower: 0.25
-    - _MaxHeight: 1.42
-    - _MinHeight: 0.29
-    - _ShadowPower: 0.52
-    - _TPower: 0.32
+    - _AlphaCutoff: 0.97
+    - _Base: 0.43
+    - _Density: 2.55
+    - _GradientOffset: 0.09
+    - _Height: 0.89
+    - _LightPower: 0.09
+    - _MaxHeight: 1.4
+    - _MinHeight: 0.15
+    - _ShadowPower: 0.34
+    - _TPower: 0.63
     - _WindStrength: 1
     m_Colors:
-    - _Darker: {r: 0.08810966, g: 0.22334388, b: 0.41509432, a: 1}
+    - _Darker: {r: 0.23137257, g: 0.3803922, b: 0.13725491, a: 1}
     - _GradientEnd: {r: 1, g: 1, b: 1, a: 1}
     - _GradientStart: {r: 1, g: 1, b: 1, a: 1}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
-    - _Tint: {r: 0.31585974, g: 0.52396244, b: 0.735849, a: 1}
+    - _Tint: {r: 0.36078432, g: 0.5058824, b: 0.20392159, a: 1}
     - _VertexIgnoreColour: {r: 1, g: 0, b: 0, a: 1}
     - _VertexPaintColour: {r: 1, g: 1, b: 1, a: 1}
-    - _WindFrequency: {r: 0.5, g: 0.7, b: 0, a: 0}
+    - _WindFrequency: {r: 0.1, g: 0.2, b: 0, a: 0}
   m_BuildTextureStacks: []

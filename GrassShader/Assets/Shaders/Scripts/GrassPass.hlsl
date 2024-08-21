@@ -21,7 +21,7 @@ struct Varyings
     float4 positionOS : TEXCOORD5;
 
     float4 color : COLOR;
-
+    
     #if _NORMALMAP
     half3 bitangentWS               : TEXCOORD5;
     #endif
@@ -37,7 +37,8 @@ float _Height;
 float _Base;
 float4 _Tint;
 float _RecieveShadows;
-
+float _MinHeight;
+float _MaxHeight;
 float _LightPower;
 float _TPower;
 
@@ -64,7 +65,7 @@ Varyings LitPassVertex(Attributes input)
     
     output.normalWS = vertexNormalInput.normalWS;
     output.tangentWS = vertexNormalInput.tangentWS;
-
+    
     #ifdef _NORMALMAP
         output.bitangentWS = vertexNormalInput.bitangentWS;
     #endif
@@ -115,50 +116,69 @@ float rand(float3 co)
     return frac(sin(dot(co.xyz, float3(12.9898, 78.233, 53.539))) * 43758.5453);
 }
 
+// Function to compare if two colors are close within a tolerance
+bool ColorClose(float4 colorA, float4 colorB, float3 tolerance)
+{
+    return abs(colorA.rgb - colorB.rgb) < tolerance;
+}
 
+float4 _VertexPaintColour;
+float4 _VertexIgnoreColour;
 sampler2D _WindDistortionMap;
 float3 _WindFrequency;
 float _WindStrength;
-
-float _MinHeight;
-float _MaxHeight;
+float _Density;
+float4 _Offset;
 
 [maxvertexcount(6)]
 void LitPassGeom(triangle Varyings input[3], inout TriangleStream<Varyings> outStream)
 {
-    if (input[0].color.g < 0.1f && input[0].color.r > 0.9f)
+    float3 tolerance = float3(0.05, 0.105, 0.05); // Define tolerance for color comparison
+
+    // Check if input color matches vertex paint color within tolerance
+    if (!ColorClose(input[0].color, _VertexPaintColour, tolerance))
+    {
+        return;
+    }
+
+    if(input[0].color.g < 0.1f && ColorClose(input[0].color, _VertexIgnoreColour, tolerance))
+    {
+        return;
+    }
+    
+    // if (input[0].color.g < 0.1f && input[0].color.r > 0.9f)
+    //     return;
+        
+    // Skip vertex creation based on density
+    if (rand(input[0].positionWSAndFogFactor.xyz) > _Density)
         return;
 
     float2 uv = (input[0].positionOS.xy * _Time.xy * _WindFrequency);
-
     float4 windSample = tex2Dlod(_WindDistortionMap, float4(uv, 0, 0)) * _WindStrength;
 
     float3 rotatedNormalZ = mul(input[0].normalWS, RotZ(windSample.x));
-
     float3 rotatedNormal = mul(rotatedNormalZ, RotX(windSample.y));
 
-
     float randomHeight = rand(input[0].positionWSAndFogFactor.xyz * 2.238293f);
-
     float3 basePos = (input[0].positionWSAndFogFactor.xyz + input[1].positionWSAndFogFactor.xyz + input[2].positionWSAndFogFactor.xyz) / 3;
 
     Varyings o = input[0];
 
     float3 rotatedTangent = normalize(mul(o.tangentWS, RotY(rand(o.positionWSAndFogFactor.xyz) * 90)));
     float randH = rand(rotatedTangent) * 0.15;
-    float3 oPos = (basePos - rotatedTangent *_Base);
+    float3 oPos = (basePos + _Offset - rotatedTangent * _Base);
     o.positionCS = TransformWorldToHClip(oPos);
 
     Varyings o2 = input[0];
-    float3 o2Pos = (basePos + rotatedTangent * _Base);
+    float3 o2Pos = (basePos + _Offset + rotatedTangent * _Base);
     o2.positionCS = TransformWorldToHClip(o2Pos);
 
     Varyings o3 = input[0];
-    float3 o3Pos = (basePos + rotatedTangent * _Base + rotatedNormal*clamp(_Height* randomHeight,_MinHeight,_MaxHeight));
+    float3 o3Pos = (basePos + _Offset + rotatedTangent * _Base + rotatedNormal * clamp(_Height * randomHeight, _MinHeight, _MaxHeight));
     o3.positionCS = TransformWorldToHClip(o3Pos);
 
     Varyings o4 = input[0];
-    float3 o4Pos = (basePos - rotatedTangent * _Base + rotatedNormal * clamp(_Height * randomHeight, _MinHeight, _MaxHeight));
+    float3 o4Pos = (basePos + _Offset - rotatedTangent * _Base + rotatedNormal * clamp(_Height * randomHeight, _MinHeight, _MaxHeight));
     o4.positionCS = TransformWorldToHClip(o4Pos);
 
     float3 newNormal = mul(rotatedTangent, RotY(PI / 2));
@@ -184,7 +204,6 @@ void LitPassGeom(triangle Varyings input[3], inout TriangleStream<Varyings> outS
     outStream.Append(o);
 
     outStream.RestartStrip();
-
 }
 
 float4 TransformWorldToShadowCoords(float3 positionWS)
@@ -196,6 +215,7 @@ float4 TransformWorldToShadowCoords(float3 positionWS)
 float _ShadowPower;
 float _AlphaCutoff;
 float4 _Darker;
+float _GradientOffset;
 
 half4 LitPassFragment(Varyings input, bool vf : SV_IsFrontFace) : SV_Target
 {
@@ -213,18 +233,15 @@ half4 LitPassFragment(Varyings input, bool vf : SV_IsFrontFace) : SV_Target
     half3 color = (0, 0, 0);
 
     Light mainLight;
-
     float4 shadowCoord = TransformWorldToShadowCoords(positionWS);
-
     mainLight = GetMainLight(shadowCoord);
 
     float3 normalLight = LightingLambert(mainLight.color, mainLight.direction, normalWS) * _LightPower;
     float3 inverseNormalLight = LightingLambert(mainLight.color, mainLight.direction, -normalWS) * _TPower;
-
+    
     color = _Tint + normalLight + inverseNormalLight;
-
-    color = lerp(color, _Darker, 1 - input.uv.y);
-
+    
+    color = lerp(color, _Darker, clamp(1 - input.uv.y + _GradientOffset, -1, 1));
     color = lerp(_Darker, color, clamp(mainLight.shadowAttenuation + _ShadowPower, 0, 1));
 
 
